@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>XPS Complete</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#05080f;color:#c8d8f0;font-family:'Segoe UI',sans-serif;font-size:13px;overflow:hidden;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#1c3050;border-radius:3px}
+#hdr{height:44px;background:linear-gradient(90deg,#07091a,#0d1830,#07091a);border-bottom:1px solid #1a2a3a;display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0}
+#hdr-logo{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#00e5ff,#0044aa);box-shadow:0 0 10px #00e5ff44;flex-shrink:0}
+#hdr-t{font-size:12px;font-weight:700;color:#00e5ff;letter-spacing:3px}
+#hdr-s{font-size:8px;color:#2d4470;letter-spacing:2px;margin-top:1px}
+.htab{padding:4px 14px;font-size:9px;cursor:pointer;letter-spacing:1px;background:transparent;border:1px solid #1e3050;color:#334d6a;border-radius:3px;font-family:inherit}
+.htab.on{background:#00335566;border-color:#00e5ff;color:#00e5ff}
+#shell{flex:1;display:flex;overflow:hidden}
+.pane{display:none;flex:1;overflow:hidden}
+.pane.on{display:flex}
+/* LEFT PANEL */
+#lp{width:205px;flex-shrink:0;background:#080c18;border-right:1px solid #1a2a3a;display:flex;flex-direction:column;overflow:hidden}
+#lpsc{flex:1;overflow-y:auto;padding:8px}
+.sh{font-size:9px;letter-spacing:3px;color:#2d4470;text-transform:uppercase;padding:3px 2px;border-bottom:1px solid #0d1520;margin:8px 0 5px}
+.sh:first-child{margin-top:0}
+.cath{font-size:10px;color:#3d5a80;padding:4px 2px;cursor:pointer;border-top:1px solid #0d1520;margin-top:2px;display:flex;justify-content:space-between}
+.matb{padding:3px 8px;cursor:pointer;font-size:11px;border-radius:2px;margin-bottom:1px;border-left:2px solid transparent;color:#4d6a88;display:flex;align-items:center;justify-content:space-between;width:100%;background:transparent;text-align:left;font-size:12px}
+.matb:hover{color:#00e5ff;background:rgba(0,229,255,.04)}
+.matb.on{background:#00336622;color:#00e5ff;border-left-color:#00e5ff}
+.vst{display:flex;align-items:center;gap:5px;padding:3px 6px 3px 16px;cursor:pointer;font-size:11px;color:#3d5a80;width:100%}
+.vst:hover{background:rgba(255,255,255,.03);color:#8899bb}
+.vst.on{color:#c8d8f0}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+input[type=range]{width:100%;accent-color:#00e5ff;cursor:pointer;display:block;margin-bottom:5px}
+.rl{font-size:9px;color:#334d6a;margin-bottom:2px;letter-spacing:1px;text-transform:uppercase;margin-top:5px}
+.togrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.toglbl{font-size:10px;color:#3d5572}
+.togtrk{width:28px;height:14px;border-radius:7px;cursor:pointer;position:relative;border:1px solid #1e3050;background:#0d1520;flex-shrink:0}
+.togtrk.on{background:#00446688;border-color:#00e5ff44}
+.togtrk div{position:absolute;top:2px;left:2px;width:8px;height:8px;border-radius:50%;background:#283d55;transition:.15s}
+.togtrk.on div{left:14px;background:#00e5ff}
+.bpair{display:flex;gap:3px;margin-bottom:7px}
+.bpair button{flex:1;padding:3px 0;font-size:9px;cursor:pointer;border-radius:2px;font-family:inherit;background:transparent;border:1px solid #1e3050;color:#334d6a}
+.bpair button.on{background:#00335544;border-color:#00e5ff88;color:#00e5ff}
+input[type=number]{width:62px;padding:3px 5px;font-size:9px;background:#0a0e18;border:1px solid #1a2a3a;color:#6688aa;border-radius:3px;outline:none;font-family:inherit}
+.rb{width:100%;padding:2px;font-size:8px;background:transparent;border:1px solid #0d1a2a;color:#283d55;cursor:pointer;border-radius:2px;margin-bottom:6px;font-family:inherit}
+.ptune{margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #080f18}
+.fl{font-size:8px;color:#283d55;margin-bottom:1px}
+/* CENTER */
+#cp{flex:1;display:flex;flex-direction:column;min-width:0;background:#070b17;overflow:hidden}
+#cvw{flex:1;display:flex;align-items:center;justify-content:center;padding:4px 6px 2px;min-height:0}
+#cvi{width:100%;max-width:100%;aspect-ratio:4/3;position:relative;max-height:100%}
+#spcv{width:100%;height:100%;display:block;cursor:crosshair;border-radius:4px;border:1px solid #1a2a3a}
+#hvr{position:absolute;bottom:6px;right:10px;font-size:12px;color:#00e5ff99;font-family:monospace;pointer-events:none;letter-spacing:.5px}
+#ptw{background:#060a14;border-top:1px solid #1a2a3a;padding:5px 14px;flex-shrink:0}
+#ptbl{font-size:10px;width:100%;border-collapse:collapse;white-space:nowrap;font-family:monospace}
+#ptbl th{text-align:left;padding:2px 8px;color:#2d4470;font-weight:400;font-size:8px;letter-spacing:1px}
+#ptbl td{padding:3px 8px;border-top:1px solid #0a1018}
+/* GUIDE */
+#gsb{width:210px;flex-shrink:0;background:#080d18;border-right:1px solid #1c2e48;overflow-y:auto;padding:14px 0 40px}
+.glogo{padding:0 14px 12px;border-bottom:1px solid #1c2e48;margin-bottom:4px}
+.glogo-t{font:700 11px monospace;color:#00e5ff;letter-spacing:3px}
+.glogo-s{font:9px monospace;color:#2d4060;letter-spacing:2px;margin-top:2px}
+.gns{padding:10px 14px 2px;font:8px monospace;letter-spacing:3px;color:#2d4060;text-transform:uppercase}
+.gni{display:block;padding:5px 14px 5px 18px;font-size:12px;color:#4a6880;border-left:2px solid transparent;cursor:pointer}
+.gni:hover{color:#00e5ff;background:rgba(0,229,255,.04);border-left-color:rgba(0,229,255,.3)}
+.gni.active{color:#00e5ff;border-left-color:#00e5ff;background:rgba(0,229,255,.06)}
+#gm{flex:1;overflow-y:auto;padding:28px 40px 80px}
+#gm h2{font-size:17px;font-weight:700;margin:32px 0 10px;padding-bottom:7px;border-bottom:1px solid #1c2e48;color:#e0f0ff}
+#gm h3{font-size:12px;font-weight:700;color:#00e5ff;margin:12px 0 4px}
+#gm p{margin-bottom:8px;color:#8aaccc;font-size:13px;line-height:1.7}
+#gm strong{color:#c8d8f0}
+.card{background:#0d1525;border:1px solid #1c2e48;border-radius:7px;padding:14px 17px;margin-bottom:11px}
+.card.cl{border-left:3px solid #00e5ff}.card.rd{border-left:3px solid #ff6b6b}.card.ye{border-left:3px solid #ffd93d}.card.gr{border-left:3px solid #6bcb77}
+.fx{background:#05080f;border:1px solid #1c2e48;border-radius:4px;padding:7px 12px;margin:7px 0;font:12px monospace;color:#ffd93d}
+table.ref{width:100%;border-collapse:collapse;margin:9px 0;font-size:12px}
+table.ref th{text-align:left;padding:5px 10px;color:#4a6880;font:400 9px monospace;letter-spacing:1px;border-bottom:1px solid #1c2e48;background:#111e30}
+table.ref td{padding:5px 10px;border-bottom:1px solid #0d1520;color:#7a9cc0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cy{color:#00e5ff}.gr2{color:#6bcb77}.re{color:#ff6b6b}.ye2{color:#ffd93d}.or{color:#ffb74d}
+ul.blt{list-style:none}ul.blt li{padding:3px 0 3px 15px;position:relative;color:#7a9cc0;font-size:12px}
+ul.blt li::before{content:"◆";position:absolute;left:0;color:#00e5ff;font-size:7px;top:7px}
+.warn{background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.22);border-radius:6px;padding:10px 14px;margin:8px 0}
+.warn h4{color:#ff6b6b;font-size:11px;margin-bottom:3px}
+.tip{background:rgba(107,203,119,.06);border:1px solid rgba(107,203,119,.18);border-radius:6px;padding:10px 14px;margin:8px 0}
+.tip h4{color:#6bcb77;font-size:11px;margin-bottom:3px}
+.step{display:flex;gap:10px;margin:7px 0}
+.sn{width:22px;height:22px;border-radius:50%;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.28);color:#00e5ff;font:600 10px monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.sb h4{color:#c8d8f0;font-size:13px;margin-bottom:1px}
+.sb p{font-size:12px;margin:0;color:#8aaccc}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div id="hdr-logo"></div>
+  <div><div id="hdr-t">XPS COMPLETE</div><div id="hdr-s">SIMULATOR + THEORY GUIDE</div></div>
+  <div style="margin-left:auto;display:flex;gap:5px">
+    <button class="htab on" id="btn-sim" onclick="swTab('sim')">⬡ SIMULATOR</button>
+    <button class="htab" id="btn-guide" onclick="swTab('guide')">📚 THEORY GUIDE</button>
+  </div>
+</div>
+<div id="shell">
+
+<!-- ══ SIMULATOR ══ -->
+<div class="pane on" id="pane-sim">
+  <div id="lp"><div id="lpsc">
+    <div class="sh">Material Library</div>
+    <div id="mlist"></div>
+    <div style="border-top:1px solid #0d1520;margin:5px 0"></div>
+    <div class="sh">Parameters</div>
+    <div class="rl">Background</div>
+    <div class="bpair" id="bgb"></div>
+    <div class="togrow"><span class="toglbl">Show background</span><div class="togtrk on" id="tg-bg" onclick="tg('bg')"><div></div></div></div>
+    <div class="togrow"><span class="toglbl">Show components</span><div class="togtrk on" id="tg-cp" onclick="tg('cp')"><div></div></div></div>
+    <div class="rl" id="l-eta">Lorentzian 40%</div><input type="range" min="0" max="1" step="0.05" value="0.4" oninput="upd('eta',this.value)">
+    <div class="rl" id="l-fw">FWHM ×1.00</div><input type="range" min="0.5" max="3" step="0.05" value="1.0" oninput="upd('fw',this.value)">
+    <div class="rl" id="l-off">BE Offset +0.00 eV</div><input type="range" min="-5" max="5" step="0.05" value="0" oninput="upd('off',this.value)">
+    <button class="rb" onclick="upd('off',0);document.querySelector('#lp input[min=-5]').value=0">RESET OFFSET</button>
+    <div class="rl" id="l-ns">Noise 2.0%</div><input type="range" min="0" max="0.15" step="0.005" value="0.02" oninput="upd('ns',this.value)">
+    <div class="rl">Energy Range (eV)</div>
+    <div style="display:flex;gap:3px;align-items:center;margin-bottom:6px">
+      <input type="number" id="xmn" value="60" oninput="upd('rng')">
+      <span style="color:#1e3050;font-size:9px">–</span>
+      <input type="number" id="xmx" value="200" oninput="upd('rng')">
+    </div>
+    <div style="border-top:1px solid #0d1520;margin:5px 0"></div>
+    <div class="sh">Peak Fine-Tune</div>
+    <div id="pft"></div>
+  </div></div>
+  <div id="cp">
+    <div id="cvw"><div id="cvi">
+      <canvas id="spcv" width="800" height="600"></canvas>
+      <div id="hvr"></div>
+    </div></div>
+    <div id="ptw">
+      <div style="font-size:8px;letter-spacing:3px;color:#2d4470;margin-bottom:4px">PEAK ANALYSIS</div>
+      <div style="overflow-x:auto"><table id="ptbl">
+        <thead><tr><th></th><th>Level</th><th>State</th><th>BE (eV)</th><th>Shift</th><th>FWHM</th><th>Int</th></tr></thead>
+        <tbody id="ptbd"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THEORY GUIDE ══ -->
+<div class="pane" id="pane-guide">
+  <nav id="gsb">
+    <div class="glogo"><div class="glogo-t">XPS GUIDE</div><div class="glogo-s">理論完整指南</div></div>
+    <div class="gns">基礎原理</div>
+    <span class="gni" onclick="gs('s1')">1. XPS 是什麼</span>
+    <span class="gni" onclick="gs('s2')">2. 光電效應 &amp; 能階</span>
+    <span class="gni" onclick="gs('s3')">3. 基本方程式</span>
+    <span class="gni" onclick="gs('s4')">4. 量測流程</span>
+    <div class="gns">光譜解讀</div>
+    <span class="gni" onclick="gs('s5')">5. 核心能級命名</span>
+    <span class="gni" onclick="gs('s6')">6. 自旋軌道分裂</span>
+    <span class="gni" onclick="gs('s7')">7. 峰形與 FWHM</span>
+    <span class="gni" onclick="gs('s8')">8. 背景扣除</span>
+    <div class="gns">化學位移</div>
+    <span class="gni" onclick="gs('s9')">9. 氧化態效應</span>
+    <span class="gni" onclick="gs('s10')">10. 電負度效應</span>
+    <span class="gni" onclick="gs('s11')">11. 屏蔽 &amp; 末態</span>
+    <span class="gni" onclick="gs('s12')">12. 衛星峰</span>
+    <div class="gns">參考數據</div>
+    <span class="gni" onclick="gs('s13')">13. 金屬 BE 對照</span>
+    <span class="gni" onclick="gs('s14')">14. 氧化物 BE 對照</span>
+    <span class="gni" onclick="gs('s15')">15. 自旋分裂數據</span>
+    <div class="gns">實務</div>
+    <span class="gni" onclick="gs('s16')">16. 常見誤判</span>
+    <span class="gni" onclick="gs('s17')">17. 解譜流程</span>
+  </nav>
+  <div id="gm">
+
+<div id="s1" style="margin-bottom:40px">
+<h2>1. XPS 是什麼</h2>
+<p><strong>X 射線光電子能譜（XPS）</strong>，又稱 ESCA（Electron Spectroscopy for Chemical Analysis），由 Kai Siegbahn 於 1960 年代發展，1981 年獲諾貝爾物理學獎。以固定能量的 X 射線照射樣品表面，偵測射出光電子的動能，換算出各元素的束縛能，同時得到元素組成與化學態。</p>
+<div class="g2">
+<div class="card cl"><h3>XPS 能提供什麼</h3><ul class="blt"><li>元素組成（H、He 除外）</li><li>定量（at%）</li><li>氧化態／化學態</li><li>深度分佈（角度 XPS）</li></ul></div>
+<div class="card rd"><h3>XPS 的限制</h3><ul class="blt"><li>無法測 H、He</li><li>需高真空（&lt;10⁻⁸ Torr）</li><li>分析深度約 5–10 nm</li><li>空間解析度約 20 μm</li></ul></div>
+</div></div>
+
+<div id="s2" style="margin-bottom:40px">
+<h2>2. 光電效應 &amp; 能階</h2>
+<p>X 射線光子打出核心軌道的電子（光電子），光電子的動能由愛因斯坦方程決定。束縛能 BE 代表將電子從核心軌道移至費米能階所需的能量。</p>
+<div class="fx">E_k = hν − BE − φ<br>hν：X 射線能量（Al Kα = 1486.6 eV）<br>φ：功函數（儀器校正）</div>
+<div class="card ye"><h3>能階示意</h3><p>核心能級（1s, 2s, 2p…）→ 費米能階 E_F → 真空能階 E_vac<br>BE 從費米能階量起，E_k 從真空能階量起，差值為功函數 φ。</p></div>
+</div>
+
+<div id="s3" style="margin-bottom:40px">
+<h2>3. 基本方程式</h2>
+<div class="fx">BE = hν − E_k − φ</div>
+<div class="g2">
+<div class="card cl"><h3>常用 X 射線源</h3><ul class="blt"><li>Al Kα：1486.6 eV（最常用）</li><li>Mg Kα：1253.6 eV</li><li>同步輻射：可調能量</li></ul></div>
+<div class="card gr"><h3>儀器校正</h3><ul class="blt"><li>Au 4f₇/₂ = 84.0 eV</li><li>Ag 3d₅/₂ = 368.2 eV</li><li>Cu 2p₃/₂ = 932.6 eV</li></ul></div>
+</div></div>
+
+<div id="s4" style="margin-bottom:40px">
+<h2>4. 量測流程</h2>
+<div class="step"><div class="sn">1</div><div class="sb"><h4>試樣製備</h4><p>清潔表面，避免汙染；導電膠固定粉末樣品</p></div></div>
+<div class="step"><div class="sn">2</div><div class="sb"><h4>導入真空</h4><p>樣品置入超高真空腔體（&lt;10⁻⁸ Torr）</p></div></div>
+<div class="step"><div class="sn">3</div><div class="sb"><h4>Survey 全掃</h4><p>0–1100 eV，確認元素種類</p></div></div>
+<div class="step"><div class="sn">4</div><div class="sb"><h4>窄掃（High-res）</h4><p>針對各元素做高解析掃描，解析化學態</p></div></div>
+<div class="step"><div class="sn">5</div><div class="sb"><h4>數據分析</h4><p>背景扣除 → 峰擬合 → 定量</p></div></div>
+</div>
+
+<div id="s5" style="margin-bottom:40px">
+<h2>5. 核心能級命名</h2>
+<p>命名格式：<strong>元素 + 主量子數 n + 角量子數 l + 自旋 j</strong></p>
+<div class="fx">Ti 2p₃/₂　→　Ti 元素，n=2，l=p，j=3/2</div>
+<table class="ref"><thead><tr><th>符號</th><th>n</th><th>l</th><th>j</th></tr></thead>
+<tbody>
+<tr><td>1s</td><td>1</td><td>s(0)</td><td>1/2</td></tr>
+<tr><td>2s</td><td>2</td><td>s(0)</td><td>1/2</td></tr>
+<tr><td>2p₁/₂</td><td>2</td><td>p(1)</td><td>1/2</td></tr>
+<tr><td>2p₃/₂</td><td>2</td><td>p(1)</td><td>3/2</td></tr>
+<tr><td>3d₃/₂</td><td>3</td><td>d(2)</td><td>3/2</td></tr>
+<tr><td>3d₅/₂</td><td>3</td><td>d(2)</td><td>5/2</td></tr>
+<tr><td>4f₅/₂</td><td>4</td><td>f(3)</td><td>5/2</td></tr>
+<tr><td>4f₇/₂</td><td>4</td><td>f(3)</td><td>7/2</td></tr>
+</tbody></table>
+</div>
+
+<div id="s6" style="margin-bottom:40px">
+<h2>6. 自旋軌道分裂</h2>
+<p>l &gt; 0 的軌道（p, d, f）因自旋-軌道耦合分裂成兩個峰（雙峰），BE 較高者對應較低 j 值。</p>
+<table class="ref"><thead><tr><th>能級</th><th>分裂 ΔE (eV)</th><th>強度比 (高j:低j)</th></tr></thead>
+<tbody>
+<tr><td class="cy">Si 2p</td><td>0.61</td><td>2:1</td></tr>
+<tr><td class="cy">Ti 2p</td><td>5.77</td><td>2:1</td></tr>
+<tr><td class="cy">Fe 2p</td><td>13.1</td><td>2:1</td></tr>
+<tr><td class="cy">Cu 2p</td><td>19.74</td><td>2:1</td></tr>
+<tr><td class="ye2">Mo 3d</td><td>3.13</td><td>3:2</td></tr>
+<tr><td class="ye2">Ag 3d</td><td>6.00</td><td>3:2</td></tr>
+<tr><td class="or">Au 4f</td><td>3.67</td><td>4:3</td></tr>
+<tr><td class="or">W 4f</td><td>2.18</td><td>4:3</td></tr>
+</tbody></table>
+<div class="tip"><h4>記憶規則</h4><p>p → 2:1，d → 3:2，f → 4:3　（分子 = 2j+1）</p></div>
+</div>
+
+<div id="s7" style="margin-bottom:40px">
+<h2>7. 峰形與 FWHM</h2>
+<p>XPS 峰形為 <strong>Voigt 函數</strong> = Gaussian × Lorentzian 混合。金屬導體因電子-電洞激發有 Doniach-Šunjić 不對稱拖尾。</p>
+<div class="g2">
+<div class="card cl"><h3>Gaussian（η=0）</h3><p>儀器展寬、聲子展寬主導。絕緣體、有機物常見。</p></div>
+<div class="card ye"><h3>Lorentzian（η=1）</h3><p>本徵壽命展寬主導。過渡金屬有較大 Lorentzian 成分。</p></div>
+</div>
+<p>典型 FWHM：貴金屬 ~0.6 eV，過渡金屬氧化物 1.5–2.0 eV，有機物 1.0–1.5 eV。</p>
+</div>
+
+<div id="s8" style="margin-bottom:40px">
+<h2>8. 背景扣除</h2>
+<div class="g2">
+<div class="card gr"><h3>Shirley 背景（最常用）</h3><p>迭代計算，背景值正比於積分強度。適合大多數 XPS 峰。</p></div>
+<div class="card ye"><h3>線性背景</h3><p>兩端連線。適合窄掃描範圍、低能損失系統。</p></div>
+</div>
+<div class="warn"><h4>注意</h4><p>背景選擇影響定量結果。Cu 2p、Fe 2p 等有衛星峰的系統要特別謹慎設定背景範圍。</p></div>
+</div>
+
+<div id="s9" style="margin-bottom:40px">
+<h2>9. 氧化態效應</h2>
+<p>氧化態升高 → 電子密度降低 → BE 正位移（1–3 eV per 氧化態）。這是 XPS 最重要的化學位移來源。</p>
+<table class="ref"><thead><tr><th>元素</th><th>狀態</th><th>BE (eV)</th><th>位移</th></tr></thead>
+<tbody>
+<tr><td class="cy">Ti 2p₃/₂</td><td>Ti⁰</td><td>453.8</td><td>ref</td></tr>
+<tr><td></td><td>Ti²⁺</td><td>455.5</td><td class="gr2">+1.7</td></tr>
+<tr><td></td><td>Ti³⁺</td><td>457.2</td><td class="gr2">+3.4</td></tr>
+<tr><td></td><td>Ti⁴⁺</td><td>458.8</td><td class="gr2">+5.0</td></tr>
+<tr><td class="ye2">Fe 2p₃/₂</td><td>Fe⁰</td><td>706.8</td><td>ref</td></tr>
+<tr><td></td><td>Fe²⁺</td><td>709.5</td><td class="gr2">+2.7</td></tr>
+<tr><td></td><td>Fe³⁺</td><td>710.9</td><td class="gr2">+4.1</td></tr>
+</tbody></table>
+</div>
+
+<div id="s10" style="margin-bottom:40px">
+<h2>10. 電負度效應</h2>
+<p>高電負度配體（O, F, Cl…）從中心原子奪取電子，使中心原子 BE 升高。C 1s 各官能基是典型例子。</p>
+<table class="ref"><thead><tr><th>C 1s 官能基</th><th>BE (eV)</th><th>位移</th></tr></thead>
+<tbody>
+<tr><td>C−C / C−H</td><td>284.8</td><td>ref</td></tr>
+<tr><td>C−O</td><td>286.3</td><td class="gr2">+1.5</td></tr>
+<tr><td>C=O</td><td>287.8</td><td class="gr2">+3.0</td></tr>
+<tr><td>O−C=O (COOH)</td><td>289.0</td><td class="gr2">+4.2</td></tr>
+<tr><td>CF₂</td><td>291.0</td><td class="gr2">+6.2</td></tr>
+</tbody></table>
+</div>
+
+<div id="s11" style="margin-bottom:40px">
+<h2>11. 屏蔽 &amp; 末態效應</h2>
+<p>光電子離開後，周圍電子重排（鬆弛）降低測得的 BE。金屬中自由電子屏蔽效果強，測得 BE 較低。這解釋了為何 Cu²⁺ 的 BE 高於 Cu⁰ 的差異不如預期大。</p>
+<div class="fx">BE_measured = BE_initial − E_relaxation</div>
+</div>
+
+<div id="s12" style="margin-bottom:40px">
+<h2>12. 衛星峰（Shake-up）</h2>
+<p>光電子離開時伴隨配體→金屬電荷轉移，消耗額外能量，在主峰高 BE 側產生衛星峰（+5–15 eV）。</p>
+<div class="g2">
+<div class="card rd"><h3>Cu 2p 衛星峰</h3><p>Cu⁰、Cu⁺：<strong>無衛星</strong><br>Cu²⁺：主峰 933.6 eV，衛星峰 ~942 eV（ΔE ≈ +8.5 eV）<br>→ 衛星峰是鑑定 Cu²⁺ 的關鍵</p></div>
+<div class="card ye"><h3>π→π* Shake-up</h3><p>苯環、C=C 共軛在 C 1s 主峰高 BE 側 +6–7 eV 出現小衛星峰。Polystyrene 的特徵指紋。</p></div>
+</div>
+</div>
+
+<div id="s13" style="margin-bottom:40px">
+<h2>13. 金屬 BE 對照表</h2>
+<table class="ref"><thead><tr><th>金屬</th><th>能級</th><th>BE (eV)</th><th>備註</th></tr></thead>
+<tbody>
+<tr><td class="cy">Au</td><td>4f₇/₂</td><td>84.0</td><td>校正標準</td></tr>
+<tr><td class="cy">Ag</td><td>3d₅/₂</td><td>368.2</td><td>校正標準</td></tr>
+<tr><td class="cy">Cu</td><td>2p₃/₂</td><td>932.6</td><td>校正標準</td></tr>
+<tr><td class="ye2">Pt</td><td>4f₇/₂</td><td>71.2</td><td></td></tr>
+<tr><td class="ye2">Ti</td><td>2p₃/₂</td><td>453.8</td><td></td></tr>
+<tr><td class="ye2">Fe</td><td>2p₃/₂</td><td>706.8</td><td></td></tr>
+<tr><td class="ye2">Mo</td><td>3d₅/₂</td><td>228.0</td><td></td></tr>
+<tr><td class="or">W</td><td>4f₇/₂</td><td>31.4</td><td></td></tr>
+<tr><td class="or">Ni</td><td>2p₃/₂</td><td>852.7</td><td></td></tr>
+</tbody></table>
+</div>
+
+<div id="s14" style="margin-bottom:40px">
+<h2>14. 氧化物 BE 對照表</h2>
+<table class="ref"><thead><tr><th>化合物</th><th>能級</th><th>BE (eV)</th><th>vs 金屬</th></tr></thead>
+<tbody>
+<tr><td>TiO₂</td><td>Ti 2p₃/₂</td><td>458.8</td><td class="gr2">+5.0</td></tr>
+<tr><td>Fe₂O₃</td><td>Fe 2p₃/₂</td><td>710.9</td><td class="gr2">+4.1</td></tr>
+<tr><td>CuO</td><td>Cu 2p₃/₂</td><td>933.6</td><td class="gr2">+1.0</td></tr>
+<tr><td>NiO</td><td>Ni 2p₃/₂</td><td>855.5</td><td class="gr2">+2.8</td></tr>
+<tr><td>MoO₃</td><td>Mo 3d₅/₂</td><td>232.6</td><td class="gr2">+4.6</td></tr>
+<tr><td>WO₃</td><td>W 4f₇/₂</td><td>35.5</td><td class="gr2">+4.1</td></tr>
+<tr><td>Al₂O₃</td><td>Al 2p</td><td>74.3</td><td class="gr2">+1.4</td></tr>
+<tr><td>SiO₂</td><td>Si 2p</td><td>103.5</td><td class="gr2">+4.5</td></tr>
+</tbody></table>
+</div>
+
+<div id="s15" style="margin-bottom:40px">
+<h2>15. 自旋軌道分裂完整數據</h2>
+<table class="ref"><thead><tr><th>元素/能級</th><th>ΔE (eV)</th><th>強度比</th><th>主峰 BE</th></tr></thead>
+<tbody>
+<tr><td class="cy">Si 2p</td><td>0.61</td><td>2:1</td><td>99.0</td></tr>
+<tr><td class="cy">S 2p</td><td>1.18</td><td>2:1</td><td>162.0</td></tr>
+<tr><td class="cy">Al 2p</td><td>0.44</td><td>2:1</td><td>72.9</td></tr>
+<tr><td class="cy">Ti 2p</td><td>5.77</td><td>2:1</td><td>453.8</td></tr>
+<tr><td class="cy">Cr 2p</td><td>9.2</td><td>2:1</td><td>574.3</td></tr>
+<tr><td class="cy">Fe 2p</td><td>13.1</td><td>2:1</td><td>706.8</td></tr>
+<tr><td class="cy">Ni 2p</td><td>17.4</td><td>2:1</td><td>852.7</td></tr>
+<tr><td class="cy">Cu 2p</td><td>19.74</td><td>2:1</td><td>932.6</td></tr>
+<tr><td class="ye2">Mo 3d</td><td>3.13</td><td>3:2</td><td>228.0</td></tr>
+<tr><td class="ye2">Ag 3d</td><td>6.00</td><td>3:2</td><td>368.2</td></tr>
+<tr><td class="ye2">Cd 3d</td><td>6.74</td><td>3:2</td><td>404.8</td></tr>
+<tr><td class="ye2">In 3d</td><td>7.63</td><td>3:2</td><td>443.8</td></tr>
+<tr><td class="or">W 4f</td><td>2.18</td><td>4:3</td><td>31.4</td></tr>
+<tr><td class="or">Pt 4f</td><td>3.33</td><td>4:3</td><td>71.2</td></tr>
+<tr><td class="or">Au 4f</td><td>3.67</td><td>4:3</td><td>84.0</td></tr>
+<tr><td class="or">Pb 4f</td><td>4.86</td><td>4:3</td><td>136.9</td></tr>
+</tbody></table>
+</div>
+
+<div id="s16" style="margin-bottom:40px">
+<h2>16. 常見誤判</h2>
+<div class="warn"><h4>Cu⁰ vs Cu⁺ 無法用 BE 區分</h4><p>Cu⁰（932.6 eV）與 Cu⁺（932.5 eV）的 2p₃/₂ 幾乎相同。需靠 Cu LMM Auger（動能 916.3 vs 916.8 eV）或 Cu⁺ 的晶場特徵區分。</p></div>
+<div class="warn"><h4>表面充電位移</h4><p>絕緣體樣品因光電子流出造成表面帶正電，所有峰整體向高 BE 位移（0.5–5 eV）。必須用 C 1s（284.8 eV）校正。</p></div>
+<div class="warn"><h4>Ag 3d 不是 Al 2p</h4><p>Ag 3d₅/₂ = 368.2 eV，Al 2p = 72.9 eV，完全不同。確認能級命名不要混淆。</p></div>
+<div class="tip"><h4>Fe²⁺ vs Fe³⁺</h4><p>Fe²⁺（709.5 eV）與 Fe³⁺（710.9 eV）差 1.4 eV，加上衛星峰位置（分別在 +6 和 +8 eV）可輔助鑑定。</p></div>
+</div>
+
+<div id="s17" style="margin-bottom:40px">
+<h2>17. 解譜流程</h2>
+<div class="step"><div class="sn">1</div><div class="sb"><h4>充電校正</h4><p>C 1s 校正至 284.8 eV；或用 Au 4f₇/₂ = 84.0 eV</p></div></div>
+<div class="step"><div class="sn">2</div><div class="sb"><h4>確認元素</h4><p>Survey 掃描識別所有峰，排除汙染元素</p></div></div>
+<div class="step"><div class="sn">3</div><div class="sb"><h4>高解析掃描</h4><p>目標元素窄掃，確保 S/N 足夠</p></div></div>
+<div class="step"><div class="sn">4</div><div class="sb"><h4>背景扣除</h4><p>Shirley 背景，範圍設在峰兩側平坦區</p></div></div>
+<div class="step"><div class="sn">5</div><div class="sb"><h4>峰擬合</h4><p>設定 Voigt 函數，限制自旋軌道比與分裂間距</p></div></div>
+<div class="step"><div class="sn">6</div><div class="sb"><h4>定量</h4><p>峰面積 ÷ 相對靈敏度因子（RSF）= 原子百分比</p></div></div>
+<p style="margin-top:16px;color:#3d5a70;font-size:11px;text-align:center">數據來源參考：NIST XPS Database · Shirley 1972 · Scofield 1976</p>
+</div>
+
+  </div><!-- end gm -->
+</div><!-- end pane-guide -->
+
+</div><!-- end shell -->
+<script>
+// ═══ TAB SWITCH ═══════════════════════════════════════════════════════
+function swTab(t){
+  ['sim','guide'].forEach(n=>{
+    document.getElementById('pane-'+n).classList.toggle('on',n===t);
+    document.getElementById('btn-'+n).classList.toggle('on',n===t);
+  });
+  if(t==='sim') redraw();
+}
+function gs(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+
+// ═══ DATA ════════════════════════════════════════════════════════════
+const CL={
+  C1s:{be:284.8,sl:null,rt:null,lb:'C 1s'},O1s:{be:531.0,sl:null,rt:null,lb:'O 1s'},
+  N1s:{be:397.0,sl:null,rt:null,lb:'N 1s'},S2p:{be:162.0,sl:1.18,rt:.50,lb:'S 2p'},
+  Si2p:{be:99.0,sl:.61,rt:.50,lb:'Si 2p'},Al2p:{be:72.9,sl:.44,rt:.50,lb:'Al 2p'},
+  Pb4f:{be:136.9,sl:4.86,rt:.75,lb:'Pb 4f'},Au4f:{be:84.0,sl:3.67,rt:.75,lb:'Au 4f'},
+  Ag3d:{be:368.2,sl:6.00,rt:.67,lb:'Ag 3d'},Pt4f:{be:71.2,sl:3.33,rt:.75,lb:'Pt 4f'},
+  As3d:{be:41.2,sl:.69,rt:.67,lb:'As 3d'},Ti2p:{be:453.8,sl:5.77,rt:.50,lb:'Ti 2p'},
+  Fe2p:{be:706.8,sl:13.1,rt:.50,lb:'Fe 2p'},Cu2p:{be:932.6,sl:19.74,rt:.50,lb:'Cu 2p'},
+  Zn2p:{be:1021.8,sl:23.0,rt:.50,lb:'Zn 2p'},Sn3d:{be:484.9,sl:8.43,rt:.67,lb:'Sn 3d'},
+  Mo3d:{be:228.0,sl:3.13,rt:.67,lb:'Mo 3d'},W4f:{be:31.4,sl:2.18,rt:.75,lb:'W 4f'},
+  V2p:{be:512.1,sl:7.67,rt:.50,lb:'V 2p'},Cr2p:{be:574.3,sl:9.2,rt:.50,lb:'Cr 2p'},
+  Ni2p:{be:852.7,sl:17.4,rt:.50,lb:'Ni 2p'},Co2p:{be:778.2,sl:15.0,rt:.50,lb:'Co 2p'},
+  In3d:{be:443.8,sl:7.63,rt:.67,lb:'In 3d'},Ga2p:{be:1116.4,sl:26.9,rt:.50,lb:'Ga 2p'},
+  Cd3d:{be:404.8,sl:6.74,rt:.67,lb:'Cd 3d'},
+};
+const MAT={
+  Au:{c:'Metal',p:[{l:'Au4f',b:0,i:1,f:.65,s:'Au⁰'}]},
+  Ag:{c:'Metal',p:[{l:'Ag3d',b:0,i:1,f:.65,s:'Ag⁰'}]},
+  Cu:{c:'Metal',p:[{l:'Cu2p',b:0,i:1,f:.80,s:'Cu⁰'}]},
+  Pt:{c:'Metal',p:[{l:'Pt4f',b:0,i:.9,f:.70,s:'Pt⁰'}]},
+  Ni:{c:'Metal',p:[{l:'Ni2p',b:0,i:1,f:1.0,s:'Ni⁰'}]},
+  Fe:{c:'Metal',p:[{l:'Fe2p',b:0,i:1,f:1.1,s:'Fe⁰'}]},
+  Ti:{c:'Metal',p:[{l:'Ti2p',b:0,i:1,f:.80,s:'Ti⁰'}]},
+  V: {c:'Metal',p:[{l:'V2p', b:0,i:1,f:.80,s:'V⁰'}]},
+  Mo:{c:'Metal',p:[{l:'Mo3d',b:0,i:1,f:.80,s:'Mo⁰'}]},
+  W: {c:'Metal',p:[{l:'W4f', b:0,i:1,f:.70,s:'W⁰'}]},
+  Co:{c:'Metal',p:[{l:'Co2p',b:0,i:1,f:1.0,s:'Co⁰'}]},
+  Cr:{c:'Metal',p:[{l:'Cr2p',b:0,i:1,f:1.0,s:'Cr⁰'}]},
+  Al:{c:'Metal',p:[{l:'Al2p',b:0,i:1,f:.70,s:'Al⁰'}]},
+  Si:{c:'Semiconductor',p:[{l:'Si2p',b:0,i:1,f:.70,s:'Si⁰'}]},
+  GaAs:{c:'Semiconductor',p:[{l:'Ga2p',b:0,i:.9,f:.90,s:'Ga³⁺'},{l:'As3d',b:0,i:.9,f:.90,s:'As³⁻'}]},
+  SiC:{c:'Semiconductor',p:[{l:'Si2p',b:1.5,i:1,f:.90,s:'Si-C'},{l:'C1s',b:-1.8,i:1,f:.80,s:'C-Si'}]},
+  SiO2:{c:'Oxide',p:[{l:'Si2p',b:4.5,i:1,f:1.5,s:'Si⁴⁺'},{l:'O1s',b:1.5,i:2,f:1.8,s:'Si-O'}]},
+  Al2O3:{c:'Oxide',p:[{l:'Al2p',b:1.4,i:1,f:1.4,s:'Al³⁺'},{l:'O1s',b:.3,i:1.5,f:1.7,s:'Al-O'}]},
+  TiO2:{c:'Oxide',p:[{l:'Ti2p',b:5.0,i:1,f:1.5,s:'Ti⁴⁺'},{l:'O1s',b:-.9,i:2,f:1.6,s:'Ti-O'}]},
+  ZnO:{c:'Oxide',p:[{l:'Zn2p',b:0,i:1,f:1.4,s:'Zn²⁺'},{l:'O1s',b:-.6,i:1,f:1.7,s:'Zn-O'}]},
+  Fe2O3:{c:'Oxide',p:[{l:'Fe2p',b:4.1,i:1,f:2.0,s:'Fe³⁺'},{l:'O1s',b:-.9,i:1.5,f:1.8,s:'Fe-O'}]},
+  SnO2:{c:'Oxide',p:[{l:'Sn3d',b:1.8,i:1,f:1.5,s:'Sn⁴⁺'},{l:'O1s',b:-.3,i:2,f:1.7,s:'Sn-O'}]},
+  MoS2:{c:'Sulfide',p:[{l:'Mo3d',b:1.2,i:1,f:.90,s:'Mo⁴⁺'},{l:'S2p',b:.2,i:2,f:1.0,s:'S²⁻'}]},
+  WS2:{c:'Sulfide',p:[{l:'W4f',b:1.3,i:1,f:.90,s:'W⁴⁺'},{l:'S2p',b:.3,i:2,f:1.0,s:'S²⁻'}]},
+  PbS:{c:'Sulfide',p:[{l:'Pb4f',b:.8,i:1,f:1.2,s:'Pb²⁺'},{l:'S2p',b:-1,i:1,f:1.1,s:'S²⁻'}]},
+  Graphene:{c:'Carbon',p:[{l:'C1s',b:-.2,i:1,f:.55,s:'sp²C'}]},
+  Graphite:{c:'Carbon',p:[{l:'C1s',b:-.3,i:1,f:.65,s:'sp²C'},{l:'C1s',b:6.1,i:.05,f:2.5,s:'π→π*'}]},
+  Diamond:{c:'Carbon',p:[{l:'C1s',b:.7,i:1,f:.50,s:'sp³C'}]},
+  PMMA:{c:'Organic',p:[{l:'C1s',b:.2,i:1,f:1.2,s:'C-C'},{l:'C1s',b:1.7,i:.5,f:1.2,s:'C-O'},{l:'C1s',b:3.7,i:.25,f:1.2,s:'O-C=O'}]},
+};
+// 氧化態資料庫
+const VDAT={
+  Ti:{lv:'Ti2p',states:[{s:'Ti⁰',be:453.8,fw:.8,co:'#80deea'},{s:'Ti²⁺',be:455.5,fw:1.2,co:'#29b6f6'},{s:'Ti³⁺',be:457.2,fw:1.5,co:'#0288d1'},{s:'Ti⁴⁺',be:458.8,fw:1.5,co:'#01579b'}]},
+  V:{lv:'V2p',states:[{s:'V⁰',be:512.1,fw:.8,co:'#ffcdd2'},{s:'V²⁺',be:513.8,fw:1.2,co:'#ef5350'},{s:'V³⁺',be:515.0,fw:1.4,co:'#e53935'},{s:'V⁵⁺',be:517.5,fw:1.6,co:'#b71c1c'}]},
+  Fe:{lv:'Fe2p',states:[{s:'Fe⁰',be:706.8,fw:1.0,co:'#c8e6c9'},{s:'Fe²⁺',be:709.5,fw:1.5,co:'#66bb6a'},{s:'Fe³⁺',be:710.9,fw:2.0,co:'#2e7d32'}]},
+  Mo:{lv:'Mo3d',states:[{s:'Mo⁰',be:228.0,fw:.8,co:'#fff9c4'},{s:'Mo⁴⁺',be:229.2,fw:1.0,co:'#ffb300'},{s:'Mo⁶⁺',be:232.6,fw:1.3,co:'#e65100'}]},
+  Cu:{lv:'Cu2p',states:[{s:'Cu⁰',be:932.6,fw:.8,co:'#80cbc4'},{s:'Cu⁺',be:932.5,fw:1.0,co:'#26a69a'},{s:'Cu²⁺',be:933.6,fw:1.5,co:'#00695c',sat:{dbe:8.5,fw:4.5,i:.35}}]},
+  Ni:{lv:'Ni2p',states:[{s:'Ni⁰',be:852.7,fw:.9,co:'#b3e5fc'},{s:'Ni²⁺',be:855.5,fw:1.8,co:'#0288d1',sat:{dbe:6.0,fw:4.0,i:.30}}]},
+  W:{lv:'W4f',states:[{s:'W⁰',be:31.4,fw:.7,co:'#e8eaf6'},{s:'W⁴⁺',be:33.0,fw:1.0,co:'#9fa8da'},{s:'W⁶⁺',be:35.5,fw:1.2,co:'#3949ab'}]},
+  Cr:{lv:'Cr2p',states:[{s:'Cr⁰',be:574.3,fw:1.0,co:'#f8bbd0'},{s:'Cr³⁺',be:576.8,fw:1.8,co:'#f06292'},{s:'Cr⁶⁺',be:579.5,fw:1.5,co:'#c2185b'}]},
+};
+const CATS=[...new Set(Object.values(MAT).map(m=>m.c))];
+const COLS=['#00e5ff','#ff4081','#76ff03','#ffea00','#f06292','#b39ddb','#80cbc4','#ffcc02'];
+const PAD={l:68,r:24,t:36,b:52};
+
+// ═══ STATE ═══════════════════════════════════════════════════════════
+const S={
+  mat:'TiO2',bg:'shirley',shBg:true,shCp:true,eta:.4,fw:1,off:0,ns:.02,xn:60,xx:200,
+  ov:{},cat:'Oxide',
+  openVal:null,  // 展開的金屬名
+  valSel:{},     // {Ti: Set(['Ti⁰','Ti⁴⁺'])}
+  valMode:false  // true = 顯示氧化態疊加
+};
+let offCv=null, sc=null;
+
+// ═══ MATH ════════════════════════════════════════════════════════════
+function vg(x,x0,fw,eta){
+  const s=fw/(2*Math.sqrt(2*Math.log(2))),g=fw/2;
+  return(1-eta)*Math.exp(-((x-x0)**2)/(2*s*s))+eta*g*g/((x-x0)**2+g*g);
+}
+function shirley(y){
+  const n=y.length,bg=new Float64Array(n),yL=y[n-1],st=y[0]-yL;
+  for(let k=0;k<10;k++)for(let i=0;i<n;i++){
+    let a=0,tot=0;
+    for(let j=0;j<=i;j++)a+=Math.max(0,y[j]-bg[j]);
+    for(let j=0;j<n;j++)tot+=Math.max(0,y[j]-bg[j]);
+    bg[i]=yL+(tot>0?st*(a/tot):0);
+  }
+  return bg;
+}
+function buildSp(peaks,xa){
+  const n=xa.length,raw=new Float64Array(n),ct=peaks.map(()=>new Float64Array(n));
+  peaks.forEach((p,pi)=>{
+    const cl=CL[p.l];if(!cl)return;
+    const be=cl.be+p.b;
+    const add=(c,a)=>{for(let i=0;i<n;i++){const v=a*vg(xa[i],c,p.f,S.eta);raw[i]+=v;ct[pi][i]+=v;}};
+    add(be,p.i);if(cl.sl&&cl.rt!=null)add(be+cl.sl,p.i*cl.rt);
+  });
+  let bg;
+  if(S.bg==='shirley')bg=shirley(raw);
+  else{bg=new Float64Array(n);const sv=(raw[n-1]-raw[0])/n;for(let i=0;i<n;i++)bg[i]=raw[0]+sv*i;}
+  const tot=new Float64Array(n);for(let i=0;i<n;i++)tot[i]=raw[i]+bg[i];
+  return{tot,raw,bg,ct};
+}
+function coord(W,H){
+  const pw=W-PAD.l-PAD.r,ph=H-PAD.t-PAD.b;
+  return{pw,ph,tx:b=>PAD.l+((S.xx-b)/(S.xx-S.xn))*pw,ty:(v,m)=>PAD.t+ph-(v/m)*ph,fx:cx=>S.xx-((cx-PAD.l)/pw)*(S.xx-S.xn)};
+}
+
+// ═══ GET PEAKS ═══════════════════════════════════════════════════════
+function getPeaks(){
+  // 氧化態模式
+  if(S.valMode&&S.openVal&&VDAT[S.openVal]&&S.valSel[S.openVal]?.size>0){
+    const vd=VDAT[S.openVal],cl=CL[vd.lv];if(!cl)return[];
+    const out=[];
+    vd.states.filter(st=>S.valSel[S.openVal].has(st.s)).forEach(st=>{
+      out.push({l:vd.lv,b:st.be-cl.be,i:1,f:st.fw*S.fw,s:st.s,_c:st.co});
+      if(st.sat)out.push({l:vd.lv,b:st.be-cl.be+st.sat.dbe,i:st.sat.i,f:st.sat.fw*S.fw,s:st.s+' sat',_c:st.co+'66'});
+    });
+    return out;
+  }
+  return(MAT[S.mat]?.p||[]).map((p,i)=>{const o=S.ov[i]||{};return{...p,i:o.i??p.i,f:(o.f??p.f)*S.fw,b:(o.b??p.b)+S.off};});
+}
+
+// ═══ DRAW ════════════════════════════════════════════════════════════
+function drawSpec(){
+  const cv=document.getElementById('spcv');if(!cv)return;
+  const pks=getPeaks();if(!pks.length)return;
+  const W=cv.width,H=cv.height,n=800,xa=new Float64Array(n);
+  for(let i=0;i<n;i++)xa[i]=S.xx-(i/(n-1))*(S.xx-S.xn);
+  const sp=buildSp(pks,xa);
+  if(S.ns>0){const mv=Math.max(...sp.tot);for(let i=0;i<n;i++)sp.tot[i]+=(Math.random()-.5)*S.ns*mv;}
+  const yM=Math.max(...sp.tot)*1.15,co=coord(W,H);
+  if(!offCv){offCv=document.createElement('canvas');}
+  offCv.width=W;offCv.height=H;
+  const octx=offCv.getContext('2d');
+  drawAll(octx,W,H,xa,sp,pks,yM,co);
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);ctx.drawImage(offCv,0,0);
+  sc={xa,sp,yM,co};updTbl(pks);
+}
+function drawAll(ctx,W,H,xa,sp,pks,yM,co){
+  const{pw,ph,tx,ty}=co;
+  // bg
+  const gb=ctx.createLinearGradient(0,0,0,H);gb.addColorStop(0,'#090d1a');gb.addColorStop(1,'#060910');
+  ctx.fillStyle=gb;ctx.fillRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  for(let i=0;i<=8;i++){const x=PAD.l+(i/8)*pw;ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+ph);ctx.stroke();}
+  for(let i=0;i<=5;i++){const y=PAD.t+(i/5)*ph;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+pw,y);ctx.stroke();}
+  // axis labels
+  ctx.fillStyle='#5a6e88';ctx.font="11px monospace";ctx.textAlign='center';
+  for(let i=0;i<=8;i++)ctx.fillText((S.xx-(i/8)*(S.xx-S.xn)).toFixed(0),PAD.l+(i/8)*pw,PAD.t+ph+18);
+  ctx.save();ctx.translate(15,PAD.t+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#445566';ctx.fillText('Intensity (a.u.)',0,0);ctx.restore();
+  ctx.textAlign='center';ctx.fillStyle='#445566';ctx.fillText('Binding Energy (eV)',PAD.l+pw/2,H-8);
+  // background line
+  if(S.shBg){ctx.beginPath();ctx.strokeStyle='rgba(255,210,55,.38)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);for(let i=0;i<xa.length;i++){const cx=tx(xa[i]),cy=ty(sp.bg[i],yM);i?ctx.lineTo(cx,cy):ctx.moveTo(cx,cy);}ctx.stroke();ctx.setLineDash([]);}
+  // components
+  if(S.shCp)pks.forEach((p,pi)=>{const c=p._c||COLS[pi%COLS.length];ctx.beginPath();ctx.strokeStyle=c+'66';ctx.lineWidth=1.2;ctx.setLineDash([3,3]);for(let i=0;i<xa.length;i++){const cx=tx(xa[i]),cy=ty(sp.ct[pi][i]+sp.bg[i],yM);i?ctx.lineTo(cx,cy):ctx.moveTo(cx,cy);}ctx.stroke();ctx.setLineDash([]);});
+  // main spectrum
+  ctx.beginPath();const lg=ctx.createLinearGradient(0,PAD.t,0,PAD.t+ph);lg.addColorStop(0,'#00e5ff');lg.addColorStop(.6,'#0088bb');lg.addColorStop(1,'#004466');ctx.strokeStyle=lg;ctx.lineWidth=2.5;ctx.shadowColor='#00e5ff33';ctx.shadowBlur=8;for(let i=0;i<xa.length;i++){const cx=tx(xa[i]),cy=ty(sp.tot[i],yM);i?ctx.lineTo(cx,cy):ctx.moveTo(cx,cy);}ctx.stroke();ctx.shadowBlur=0;
+  ctx.beginPath();for(let i=0;i<xa.length;i++){const cx=tx(xa[i]),cy=ty(sp.tot[i],yM);i?ctx.lineTo(cx,cy):ctx.moveTo(cx,cy);}ctx.lineTo(tx(xa[xa.length-1]),PAD.t+ph);ctx.lineTo(tx(xa[0]),PAD.t+ph);ctx.closePath();const fg=ctx.createLinearGradient(0,PAD.t,0,PAD.t+ph);fg.addColorStop(0,'rgba(0,229,255,.13)');fg.addColorStop(1,'rgba(0,229,255,.01)');ctx.fillStyle=fg;ctx.fill();
+  // peak labels
+  pks.forEach((p,pi)=>{
+    const cl=CL[p.l];if(!cl)return;const c=p._c||COLS[pi%COLS.length];
+    let mv=0,mi=0;for(let i=0;i<xa.length;i++)if(sp.ct[pi][i]>mv){mv=sp.ct[pi][i];mi=i;}
+    if(mv<0.001)return;
+    const abe=xa[mi],at=sp.ct[pi][mi]+sp.bg[mi],cx=tx(abe),cy=ty(at,yM),ly=Math.max(PAD.t+16,cy-22);
+    ctx.beginPath();ctx.strokeStyle=c+'44';ctx.lineWidth=1;ctx.setLineDash([2,3]);ctx.moveTo(cx,PAD.t+ph);ctx.lineTo(cx,cy);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.strokeStyle=c+'88';ctx.lineWidth=1;ctx.moveTo(cx,cy);ctx.lineTo(cx,ly+1);ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.PI/4);ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=5;ctx.fillRect(-3,-3,6,6);ctx.shadowBlur=0;ctx.restore();
+    const lt=p.s;ctx.font="bold 10px monospace";const tw=ctx.measureText(lt).width;
+    const lx=Math.min(Math.max(cx,PAD.l+tw/2+4),PAD.l+pw-tw/2-4);
+    ctx.fillStyle='#0a0e1a';ctx.beginPath();ctx.roundRect(lx-tw/2-4,ly-12,tw+8,14,2);ctx.fill();
+    ctx.strokeStyle=c+'88';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(lx-tw/2-4,ly-12,tw+8,14,2);ctx.stroke();
+    ctx.fillStyle=c;ctx.textAlign='center';ctx.fillText(lt,lx,ly);
+    ctx.font="8px monospace";ctx.fillStyle=c+'88';ctx.fillText(abe.toFixed(1)+' eV',lx,ly+9);
+  });
+  ctx.strokeStyle='#243450';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(PAD.l,PAD.t);ctx.lineTo(PAD.l,PAD.t+ph);ctx.lineTo(PAD.l+pw,PAD.t+ph);ctx.stroke();
+}
+function drawHov(mx,my){
+  if(!sc||!offCv)return;const cv=document.getElementById('spcv');
+  const{pw,ph,tx,ty,fx}=sc.co;if(mx<PAD.l||mx>PAD.l+pw||my<PAD.t||my>PAD.t+ph){document.getElementById('hvr').textContent='';const c=cv.getContext('2d');c.clearRect(0,0,cv.width,cv.height);c.drawImage(offCv,0,0);return;}
+  const hbe=fx(mx),idx=Math.max(0,Math.min(sc.xa.length-1,Math.round(((S.xx-hbe)/(S.xx-S.xn))*(sc.xa.length-1))));
+  const abe=sc.xa[idx],ay=sc.sp.tot[idx],scx=tx(abe),scy=ty(ay,sc.yM);
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(offCv,0,0);
+  ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.moveTo(scx,PAD.t);ctx.lineTo(scx,PAD.t+ph);ctx.stroke();ctx.beginPath();ctx.moveTo(PAD.l,scy);ctx.lineTo(PAD.l+pw,scy);ctx.stroke();ctx.setLineDash([]);
+  ctx.beginPath();ctx.fillStyle='#fff';ctx.shadowColor='#00e5ff';ctx.shadowBlur=6;ctx.arc(scx,scy,3.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  const norm=ay/(Math.max(...sc.sp.tot)||1)*100;document.getElementById('hvr').textContent=`BE: ${abe.toFixed(2)} eV    I: ${norm.toFixed(1)} %`;
+}
+
+// ═══ UI HELPERS ══════════════════════════════════════════════════════
+function redraw(){drawSpec();}
+function upd(k,v){
+  if(k==='eta'){S.eta=+v;document.getElementById('l-eta').textContent=`Lorentzian ${(+v*100).toFixed(0)}%`;}
+  else if(k==='fw'){S.fw=+v;document.getElementById('l-fw').textContent=`FWHM ×${(+v).toFixed(2)}`;bldPFT();}
+  else if(k==='off'){S.off=+v;document.getElementById('l-off').textContent=`BE Offset ${+v>=0?'+':''}${(+v).toFixed(2)} eV`;}
+  else if(k==='ns'){S.ns=+v;document.getElementById('l-ns').textContent=`Noise ${(+v*100).toFixed(1)}%`;}
+  else if(k==='rng'){S.xn=+document.getElementById('xmn').value;S.xx=+document.getElementById('xmx').value;}
+  redraw();
+}
+function tg(k){S['sh'+(k==='bg'?'Bg':'Cp')]=!S['sh'+(k==='bg'?'Bg':'Cp')];document.getElementById('tg-'+k).classList.toggle('on');redraw();}
+function autoRng(){
+  if(S.valMode&&S.openVal&&VDAT[S.openVal]&&S.valSel[S.openVal]?.size>0){
+    const vd=VDAT[S.openVal],cl=CL[vd.lv];if(!cl)return;
+    const sel=vd.states.filter(st=>S.valSel[S.openVal].has(st.s));
+    const sl=cl.sl||0;
+    S.xn=Math.max(0,Math.min(...sel.map(s=>s.be))-sl-12);
+    S.xx=Math.max(...sel.map(s=>s.sat?s.be+s.sat.dbe+10:s.be))+sl+10;
+  } else {
+    const base=MAT[S.mat]?.p||[];let mn=9999,mx=0;
+    base.forEach(p=>{const cl=CL[p.l];if(!cl)return;const c=cl.be+p.b,sl=(cl.sl||0)+20;mn=Math.min(mn,c-sl);mx=Math.max(mx,c+sl);});
+    S.xn=Math.max(0,mn-15);S.xx=mx+15;
+  }
+  document.getElementById('xmn').value=S.xn.toFixed(0);document.getElementById('xmx').value=S.xx.toFixed(0);
+}
+function updTbl(pks){
+  const tb=document.getElementById('ptbd');tb.innerHTML='';
+  pks.forEach((p,i)=>{const cl=CL[p.l];if(!cl)return;const be=cl.be+p.b,c=p._c||COLS[i%COLS.length];
+    const tr=document.createElement('tr');tr.style.borderTop='1px solid #0a1018';
+    tr.innerHTML=`<td><span style="color:${c};font-size:9px">◆</span></td><td style="color:#6688aa">${cl.lb}</td><td style="color:#8899bb">${p.s}</td><td style="color:#00e5ff;font-family:monospace">${be.toFixed(2)}</td><td style="color:${p.b>=0?'#76ff03':'#ff4081'};font-family:monospace">${p.b>=0?'+':''}${p.b.toFixed(2)}</td><td style="color:#ffea00;font-family:monospace">${p.f.toFixed(2)}</td><td style="color:#f06292;font-family:monospace">${p.i.toFixed(2)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ═══ BUILD LEFT PANEL ════════════════════════════════════════════════
+function bldML(){
+  const c=document.getElementById('mlist');c.innerHTML='';
+  CATS.forEach(cat=>{
+    const h=document.createElement('div');h.className='cath';
+    h.innerHTML=`<span>${cat.toUpperCase()}</span><span>${S.cat===cat?'▲':'▼'}</span>`;
+    h.onclick=()=>{S.cat=S.cat===cat?null:cat;bldML();};c.appendChild(h);
+    if(S.cat!==cat)return;
+    Object.entries(MAT).filter(([,v])=>v.c===cat).forEach(([k])=>{
+      const hasV=!!VDAT[k];
+      const row=document.createElement('div');row.style.cssText='position:relative';
+      // material button
+      const b=document.createElement('button');
+      b.className='matb'+(k===S.mat&&!S.valMode?' on':'');
+      b.innerHTML=`<span>${k}</span>${hasV?`<span style="font-size:9px;color:${S.openVal===k?'#00e5ff':'#2d5a70'};cursor:pointer" id="arr-${k}">${S.openVal===k?'▲':'▼'}</span>`:''}`;
+      // click on material name → normal mode
+      b.onclick=(e)=>{
+        if(e.target.id===`arr-${k}`)return; // handled below
+        S.mat=k;S.ov={};S.cat=cat;S.valMode=false;S.openVal=null;
+        autoRng();bldML();bldPFT();redraw();
+      };
+      // click on arrow → expand oxidation states
+      if(hasV){
+        b.querySelector(`#arr-${k}`).onclick=(e)=>{
+          e.stopPropagation();
+          S.openVal=S.openVal===k?null:k;
+          if(S.openVal&&!S.valSel[k])S.valSel[k]=new Set([VDAT[k].states[0].s]);
+          bldML();
+        };
+      }
+      row.appendChild(b);c.appendChild(row);
+      // oxidation state rows
+      if(hasV&&S.openVal===k){
+        VDAT[k].states.forEach(st=>{
+          const sr=document.createElement('div');
+          sr.className='vst'+(S.valSel[k]?.has(st.s)?' on':'');
+          const chk=document.createElement('input');chk.type='checkbox';chk.checked=!!S.valSel[k]?.has(st.s);
+          chk.style.cssText='accent-color:#00e5ff;cursor:pointer;flex-shrink:0';
+          chk.onchange=(e)=>{
+            if(!S.valSel[k])S.valSel[k]=new Set();
+            e.target.checked?S.valSel[k].add(st.s):S.valSel[k].delete(st.s);
+            S.valMode=S.valSel[k].size>0;S.mat=k;S.ov={};
+            autoRng();bldML();bldPFT();redraw();
+          };
+          const dot=document.createElement('div');dot.className='dot';dot.style.background=st.co;
+          const lbl=document.createElement('span');lbl.textContent=st.s;
+          const bev=document.createElement('span');bev.style.cssText='font-size:8px;color:#2d4470;margin-left:auto;font-family:monospace';bev.textContent=st.be.toFixed(1);
+          sr.appendChild(chk);sr.appendChild(dot);sr.appendChild(lbl);sr.appendChild(bev);
+          sr.onclick=(e)=>{if(e.target!==chk){chk.checked=!chk.checked;chk.onchange({target:chk});}};
+          c.appendChild(sr);
+        });
+      }
+    });
+  });
+}
+function bldBg(){
+  const c=document.getElementById('bgb');c.innerHTML='';
+  ['shirley','linear'].forEach(t=>{const b=document.createElement('button');b.textContent=t;b.classList.toggle('on',S.bg===t);b.onclick=()=>{S.bg=t;bldBg();redraw();};c.appendChild(b);});
+}
+function bldPFT(){
+  const c=document.getElementById('pft');c.innerHTML='';
+  (S.valMode?[]:(MAT[S.mat]?.p||[])).forEach((p,i)=>{
+    const cl=CL[p.l];if(!cl)return;const co=COLS[i%COLS.length];
+    const d=document.createElement('div');d.className='ptune';
+    d.innerHTML=`<div style="font-size:8px;color:${co};margin-bottom:2px">${cl.lb} · ${p.s}</div>
+      <div class="fl" id="fi${i}">Int ${(S.ov[i]?.i??p.i).toFixed(2)}</div>
+      <input type="range" min=".05" max="3" step=".05" value="${(S.ov[i]?.i??p.i).toFixed(2)}" style="accent-color:${co}33" oninput="oFI(${i},this)">
+      <div class="fl" id="ff${i}">FWHM ${(S.ov[i]?.f??p.f).toFixed(2)}</div>
+      <input type="range" min=".1" max="4" step=".05" value="${(S.ov[i]?.f??p.f).toFixed(2)}" style="accent-color:${co}33" oninput="oFF(${i},this)">`;
+    c.appendChild(d);
+  });
+}
+function oFI(i,e){if(!S.ov[i])S.ov[i]={};S.ov[i].i=+e.value;document.getElementById('fi'+i).textContent='Int '+(+e.value).toFixed(2);redraw();}
+function oFF(i,e){if(!S.ov[i])S.ov[i]={};S.ov[i].f=+e.value;document.getElementById('ff'+i).textContent='FWHM '+(+e.value).toFixed(2);redraw();}
+
+// ═══ CANVAS EVENTS ═══════════════════════════════════════════════════
+(()=>{
+  const cv=document.getElementById('spcv');
+  cv.addEventListener('mousemove',e=>{
+    const r=cv.getBoundingClientRect();
+    drawHov((e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height);
+  });
+  cv.addEventListener('mouseleave',()=>{
+    document.getElementById('hvr').textContent='';
+    if(offCv){const c=cv.getContext('2d');c.clearRect(0,0,cv.width,cv.height);c.drawImage(offCv,0,0);}
+  });
+})();
+
+// ═══ INIT ════════════════════════════════════════════════════════════
+bldML();bldBg();bldPFT();autoRng();redraw();
+</script>
+</body>
+</html>
